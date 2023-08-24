@@ -1,0 +1,11 @@
+{
+  "name": "car-shopping",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "clear && node ./index.js"
+  },
+  "author": "Kyler Moore <kylerdmoore@gmail.com>",
+  "license": "ISC"
+}
