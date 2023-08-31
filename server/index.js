@@ -1,7 +1,35 @@
-const Car = require('./Car.js');
-const Truck = require('./Truck.js');
+const express = require("express");
+const app = express();
+const port = 8000;
 
-const myCar = new Car('Honda', 'CR-V', 'Blue', 'EX-L', 0);
-const dadsTruck = new Truck('Chevy', 'Silverado', 'Green', '3500', 0, 0);
+const pgp = require("pg-promise")();
+const db = pgp("postgres://postgres@localhost:5432/postgres");
 
-console.debug(myCar, dadsTruck);
+app.use(express.json());
+
+app.get("/api/cars", (req, res) => {
+  db.many(`
+    SELECT DISTINCT ON(cars.id) cars.id,
+        cars.name,
+        cars.year,
+        models.name model,
+        makes.name make,
+        trims.name trim,
+        colors.name color,
+        ARRAY_AGG(options.name) options
+    FROM public.cars
+    JOIN public.models ON models.id = cars.model_id
+    JOIN public.makes ON makes.id = models.make_id
+    JOIN public.trims ON trims.id = cars.trim_id
+    JOIN public.colors ON colors.id = cars.color_id
+    LEFT JOIN public.car_option co ON co.car_id = cars.id
+    LEFT JOIN public.options ON options.id = co.option_id
+    GROUP BY 1, 2, 3, 4, 5, 6, 7
+  `).then((data) => {
+    res.json(data);
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
