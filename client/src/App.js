@@ -10,7 +10,7 @@ export default function App() {
     <>
       <Navbar expand="lg" variant="dark" bg="dark" className="mb-5">
         <Container>
-          <Navbar.Brand href="#home">Kyler's Car Emporium</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">Kyler's Car Emporium</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">

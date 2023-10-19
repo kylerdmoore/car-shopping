@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 export default function CreateForm() {
-  // State to hold the form values
+  const [makes, setMakes] = useState([]);
   const [car, setCar] = useState({
     name: '',
     make: '',
@@ -12,11 +13,28 @@ export default function CreateForm() {
     color: '',
   });
 
+  useEffect(() => {
+    axios.get('http://localhost:3000/api/makes').then(({ data }) => {
+      setMakes(data);
+    });
+  }, []);
+
+
   // Handle form input changes
-  const handleInputChange = (event) => {
+  function handleInputChange(event) {
     const { name, value } = event.target;
     setCar({ ...car, [name]: value });
   };
+
+
+  function renderYears() {
+    const startYear = new Date(Date.now()).getFullYear() + 1;
+    let options = [];
+    for (let i = startYear; i >= 1886; i--) {
+      options.push(<option key={i} value={i}>{i}</option>)
+    }
+    return options;
+  }
 
   // Handle form submission
   const handleSubmit = (event) => {
@@ -52,7 +70,7 @@ export default function CreateForm() {
       <Form onSubmit={handleSubmit}>
         <Row>
           <Col>
-            <Form.Group controlId="make" className="mb-3">
+            <Form.Group controlId="name" className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
@@ -75,7 +93,8 @@ export default function CreateForm() {
                 onChange={handleInputChange}
                 required
               >
-                <option>Unknown</option>
+                <option disabled value={''}>--Select Make--</option>
+                {makes.map(function (make) { return <option value={make.id}>{make.name}</option>})}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -89,7 +108,7 @@ export default function CreateForm() {
                 onChange={handleInputChange}
                 required
               >
-                <option>Unknown</option>
+              <option disabled value={''}>--Select Model--</option>
               </Form.Select>
             </Form.Group>
           </Col>
@@ -105,19 +124,19 @@ export default function CreateForm() {
                 onChange={handleInputChange}
                 required
               >
-                <option>Unknown</option>
+                <option disabled value={''}>--Select Year--</option>
+                {renderYears()}
               </Form.Select>
             </Form.Group>
           </Col>
           <Col>
-            <Form.Group controlId="model" className="mb-3">
+            <Form.Group controlId="color" className="mb-3">
               <Form.Label>Color</Form.Label>
               <Form.Select
                 type="text"
                 name="color"
                 value={car.color}
                 onChange={handleInputChange}
-                required
               >
                 <option>Unknown</option>
               </Form.Select>
